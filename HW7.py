@@ -189,7 +189,17 @@ def make_winners_table(data, cur, conn):
     conn.commit()
 
 def make_seasons_table(data, cur, conn):
-    pass
+    cur.execute('CREATE TABLE IF NOT EXISTS Seasons (id INTEGER PRIMARY KEY, winner_id TEXT, end_year INTEGER)')
+    conn.commit()
+    for season_dict in data['seasons']:
+        winner_dict = season_dict['winner']
+        if isinstance(winner_dict, dict):
+            season_id = season_dict['id']
+            winner_id = str(winner_dict['id'])
+            end_date = season_dict['endDate']
+            end_year = int(end_date.split('-')[0])
+            cur.execute('INSERT OR IGNORE INTO Seasons (id, winner_id, end_year) VALUES (?,?,?)', (season_id, winner_id, end_year))
+    conn.commit()
 
 def winners_since_search(year, cur, conn):
     pass
