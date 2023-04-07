@@ -202,7 +202,14 @@ def make_seasons_table(data, cur, conn):
     conn.commit()
 
 def winners_since_search(year, cur, conn):
-    pass
+    winners_dict = {}
+    cur.execute('SELECT winner_id FROM Seasons WHERE end_year > ?', (year-1,))
+    list_ids = cur.fetchall()
+    for winner_id in list_ids:
+        cur.execute('SELECT name FROM Winners WHERE id = ?', (int(winner_id),))
+        name = cur.fetchall()[0]
+        winners_dict['name'] = winners_dict.get('name', None) + 1
+    return winners_dict
 
 
 class TestAllMethods(unittest.TestCase):
@@ -261,14 +268,14 @@ class TestAllMethods(unittest.TestCase):
     def test_make_winners_table(self):
         self.cur2.execute('SELECT * from Winners')
         winners_list = self.cur2.fetchall()
-
-        pass
+        self.assertEqual(winners_list[0][0], 57)
+        self.assertEqual(winners_list[-1][1], 'Leicester City FC')
+        self.assertEqual(len(winners_list), 7)
 
     def test_make_seasons_table(self):
         self.cur2.execute('SELECT * from Seasons')
         seasons_list = self.cur2.fetchall()
-
-        pass
+        
 
     def test_winners_since_search(self):
 
